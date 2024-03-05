@@ -101,3 +101,15 @@ include(modules/TestsExternalProject.txt)
 include(CTest)
 enable_testing()
 add_subdirectory(tests)
+
+# Some of the CMake assets contain references to the source dir. Replace these with the install path.
+install(CODE "
+    message(STATUS \"Fixing paths in installed CMake modules\")
+    file(READ \"${CDT_INSTALL_PREFIX}/lib/cmake/cdt/cdt-config.cmake\" CMAKE_CONTENTS)
+    string(REPLACE \"${CMAKE_BINARY_DIR}\" \"${CMAKE_INSTALL_PREFIX}\" CMAKE_CONTENTS \"\${CMAKE_CONTENTS}\")
+    file(WRITE \"${CDT_INSTALL_PREFIX}/lib/cmake/cdt/cdt-config.cmake\" \"\${CMAKE_CONTENTS}\")
+    file(READ \"${CDT_INSTALL_PREFIX}/lib/cmake/cdt/CDTWasmToolchain.cmake\" CMAKE_CONTENTS)
+    string(REPLACE \"${CMAKE_BINARY_DIR}\" \"${CMAKE_INSTALL_PREFIX}\" CMAKE_CONTENTS \"\${CMAKE_CONTENTS}\")
+    file(WRITE \"${CDT_INSTALL_PREFIX}/lib/cmake/cdt/CDTWasmToolchain.cmake\" \"\${CMAKE_CONTENTS}\")
+")
+
